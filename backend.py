@@ -43,7 +43,6 @@ def get_produto(produto_id):
 
 @app.route('/produtos', methods=['POST'])
 def add_produto():
-    socketio.emit("evento2", "Novo produto")
     if not request.is_json:
         return jsonify({'error': 'Requisição deve ser JSON'}), 400
     novo_produto = request.get_json()
@@ -52,6 +51,7 @@ def add_produto():
     novo_produto['id'] = maior_id + 1
     produtos.append(novo_produto)
     write_produtos(produtos)
+    socketio.emit("novo_produto", f"Novo produto: {novo_produto['nome']} adicionado")
     return jsonify(novo_produto), 201
 
 @app.route('/produtos/<int:produto_id>', methods=['PUT'])
@@ -64,8 +64,10 @@ def update_produto(produto_id):
     if produto:
         produto.update(update_data)
         write_produtos(produtos)
+        print(produto)
+        nome = produto.get('nome')
         if produto['estoque'] == 0:
-               socketio.emit("evento3", "Estoque Vazio")
+            socketio.emit("estoque_vazio", f"Estoque vazio de {nome}")
         return jsonify(produto)
     return jsonify({'error': 'Produto não encontrado'}), 404
 

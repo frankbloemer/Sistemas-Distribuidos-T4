@@ -21,8 +21,8 @@ def evento2(data):
 
 socketio.connect('http://localhost:5000')
 
-socketio.on('evento1', evento1)
-socketio.on('evento2', evento2)
+socketio.on('novo_produto', evento1)
+socketio.on('estoque_vazio', evento2)
 
 socketio.emit('new_event', {'data': 'Olá do cliente Python!'})
 
