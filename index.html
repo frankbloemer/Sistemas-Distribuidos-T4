@@ -77,7 +77,7 @@
                 stockItem.innerHTML = `
                     <img src="${product.imagem}" alt="${product.nome}">
                     ${product.nome}: R$ ${product.preco.toFixed(2)}, ${product.estoque} em estoque
-                    <button onclick="editProduct('${product.id}')">Editar</button>
+                    <button onclick="editProduct('${product.id}', '${product.nome}', ${product.preco}, ${product.estoque}, '${product.imagem}')">Editar</button>
                     <button onclick="removeProduct('${product.id}')">Remover</button>
                 `;
                 stockList.appendChild(stockItem);
@@ -114,34 +114,41 @@
                 .catch(error => console.error('Erro ao adicionar produto:', error));
         }
 
-        function editProduct(id) {
-            const product = products.find(p => p.id === id);
-            const newPrice = prompt('Novo preço:', product.preco);
-            const newStock = prompt('Novo estoque:', product.estoque);
+        function editProduct(id, nome, preco, estoque, imagem) {
+            const newPrice = prompt('Novo preço:', preco);
+            const newStock = prompt('Novo estoque:', estoque);
 
             if (newPrice !== null && newStock !== null) {
                 const updatedProduct = {
-                    ...product,
+                    nome: nome,
                     preco: parseFloat(newPrice),
-                    estoque: parseInt(newStock)
+                    estoque: parseInt(newStock),
+                    imagem: imagem
                 };
 
                 axios.put(`${API_URL}/${id}`, updatedProduct)
-                    .then(response => {
-                        Object.assign(product, response.data);
-                        updateStockList();
+                    .then(() => {
+                        const index = products.findIndex(p => p.id === id);
+                        if (index !== -1) {
+                            products[index] = updatedProduct;
+                            updateStockList();
+                        } else {
+                            console.error('Produto não encontrado:', id);
+                        }
                     })
                     .catch(error => console.error('Erro ao editar produto:', error));
             }
         }
 
         function removeProduct(id) {
-            axios.delete(`${API_URL}/${id}`)
-                .then(() => {
-                    products = products.filter(p => p.id !== id);
-                    updateStockList();
-                })
-                .catch(error => console.error('Erro ao remover produto:', error));
+            if (confirm('Tem certeza de que deseja remover este produto?')) {
+                axios.delete(`${API_URL}/${id}`)
+                    .then(() => {
+                        products = products.filter(p => p.id !== id);
+                        updateStockList();
+                    })
+                    .catch(error => console.error('Erro ao remover produto:', error));
+            }
         }
     </script>
 </body>
