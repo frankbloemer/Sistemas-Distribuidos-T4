@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loja de Bebidas Online</title>
+    <title>Controle de Estoque de Bebidas</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -27,59 +27,102 @@
             margin: 16px;
             padding: 16px;
             border: 1px solid #ddd;
-            display: none;
+        }
+        .admin-section img {
+            max-width: 50px;
+            height: auto;
+            vertical-align: middle;
+            margin-right: 8px;
         }
     </style>
 </head>
 <body>
-    <h1>Distribuidora de Bebidas - Frank & Kiche</h1>
-    <div id="product-list"></div>
+    <h1>Controle de Estoque - Frank & Kiche</h1>
     <div class="admin-section" id="admin-section">
         <h2>Estoque de Produtos</h2>
+        <button onclick="showAddProductForm()">Adicionar Novo Produto</button>
         <ul id="stock-list"></ul>
     </div>
-    <button onclick="toggleAdminSection()">Ver Estoque (Admin)</button>
+
+    <div id="add-product-form" style="display: none;">
+        <h3>Adicionar Produto</h3>
+        <label>Nome: <input type="text" id="new-product-name"></label><br>
+        <label>Preço: <input type="number" id="new-product-price" step="0.01"></label><br>
+        <label>Estoque: <input type="number" id="new-product-stock"></label><br>
+        <label>Imagem URL: <input type="text" id="new-product-image"></label><br>
+        <button onclick="addProduct()">Adicionar</button>
+        <button onclick="hideAddProductForm()">Cancelar</button>
+    </div>
+
     <script>
+        let products = [];
+
         document.addEventListener('DOMContentLoaded', () => {
             fetch('produtos.json')
                 .then(response => response.json())
                 .then(data => {
-                    const productList = document.getElementById('product-list');
-                    const stockList = document.getElementById('stock-list');
-                    data.forEach(product => {
-                        // Criar elemento de produto
-                        const productDiv = document.createElement('div');
-                        productDiv.className = 'product';
-                        productDiv.innerHTML = `
-                            <img src="${product.imagem}" alt="${product.nome}">
-                            <h3>${product.nome}</h3>
-                            <p>R$ ${product.preco.toFixed(2)}</p>
-                            ${product.estoque > 0 ?
-                                `<button onclick="comprarProduto('${product.id}')">Comprar</button>` :
-                                `<button onclick="mostrarInteresse('${product.id}')">Tenho Interesse</button>`
-                            }
-                        `;
-                        productList.appendChild(productDiv);
-
-                        // Criar item de estoque para admin
-                        const stockItem = document.createElement('li');
-                        stockItem.textContent = `${product.nome}: ${product.estoque} em estoque`;
-                        stockList.appendChild(stockItem);
-                    });
+                    products = data;
+                    updateStockList();
                 });
         });
 
-        function comprarProduto(id) {
-            alert(`Produto ${id} comprado!`);
+        function updateStockList() {
+            const stockList = document.getElementById('stock-list');
+            stockList.innerHTML = '';
+            products.forEach(product => {
+                const stockItem = document.createElement('li');
+                stockItem.innerHTML = `
+                    <img src="${product.imagem}" alt="${product.nome}">
+                    ${product.nome}: R$ ${product.preco.toFixed(2)}, ${product.estoque} em estoque
+                    <button onclick="editProduct('${product.id}')">Editar</button>
+                    <button onclick="removeProduct('${product.id}')">Remover</button>
+                `;
+                stockList.appendChild(stockItem);
+            });
         }
 
-        function mostrarInteresse(id) {
-            alert(`Interesse no produto ${id} registrado!`);
+        function showAddProductForm() {
+            document.getElementById('add-product-form').style.display = 'block';
         }
 
-        function toggleAdminSection() {
-            const adminSection = document.getElementById('admin-section');
-            adminSection.style.display = adminSection.style.display === 'none' ? 'block' : 'none';
+        function hideAddProductForm() {
+            document.getElementById('add-product-form').style.display = 'none';
+        }
+
+        function addProduct() {
+            const name = document.getElementById('new-product-name').value;
+            const price = parseFloat(document.getElementById('new-product-price').value);
+            const stock = parseInt(document.getElementById('new-product-stock').value);
+            const image = document.getElementById('new-product-image').value;
+
+            const newProduct = {
+                id: Date.now().toString(),
+                nome: name,
+                preco: price,
+                estoque: stock,
+                imagem: image
+            };
+
+            products.push(newProduct);
+            updateStockList();
+            hideAddProductForm();
+        }
+
+        function editProduct(id) {
+            const product = products.find(p => p.id === id);
+            const newPrice = prompt('Novo preço:', product.preco);
+            const newStock = prompt('Novo estoque:', product.estoque);
+
+            if (newPrice !== null && newStock !== null) {
+                product.preco = parseFloat(newPrice);
+                product.estoque = parseInt(newStock);
+                updateStockList();
+            }
+        }
+
+        function removeProduct(id) {
+            products = products.filter(p => p.id !== id);
+            updateStockList();
         }
     </script>
 </body>
