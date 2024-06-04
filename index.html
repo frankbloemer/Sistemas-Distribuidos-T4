@@ -54,16 +54,19 @@
         <button onclick="hideAddProductForm()">Cancelar</button>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
+        const API_URL = 'http://localhost:5000/produtos';
+
         let products = [];
 
         document.addEventListener('DOMContentLoaded', () => {
-            fetch('produtos.json')
-                .then(response => response.json())
-                .then(data => {
-                    products = data;
+            axios.get(API_URL)
+                .then(response => {
+                    products = response.data;
                     updateStockList();
-                });
+                })
+                .catch(error => console.error('Erro ao carregar produtos:', error));
         });
 
         function updateStockList() {
@@ -96,16 +99,19 @@
             const image = document.getElementById('new-product-image').value;
 
             const newProduct = {
-                id: Date.now().toString(),
                 nome: name,
                 preco: price,
                 estoque: stock,
                 imagem: image
             };
 
-            products.push(newProduct);
-            updateStockList();
-            hideAddProductForm();
+            axios.post(API_URL, newProduct)
+                .then(response => {
+                    products.push(response.data);
+                    updateStockList();
+                    hideAddProductForm();
+                })
+                .catch(error => console.error('Erro ao adicionar produto:', error));
         }
 
         function editProduct(id) {
@@ -114,15 +120,28 @@
             const newStock = prompt('Novo estoque:', product.estoque);
 
             if (newPrice !== null && newStock !== null) {
-                product.preco = parseFloat(newPrice);
-                product.estoque = parseInt(newStock);
-                updateStockList();
+                const updatedProduct = {
+                    ...product,
+                    preco: parseFloat(newPrice),
+                    estoque: parseInt(newStock)
+                };
+
+                axios.put(`${API_URL}/${id}`, updatedProduct)
+                    .then(response => {
+                        Object.assign(product, response.data);
+                        updateStockList();
+                    })
+                    .catch(error => console.error('Erro ao editar produto:', error));
             }
         }
 
         function removeProduct(id) {
-            products = products.filter(p => p.id !== id);
-            updateStockList();
+            axios.delete(`${API_URL}/${id}`)
+                .then(() => {
+                    products = products.filter(p => p.id !== id);
+                    updateStockList();
+                })
+                .catch(error => console.error('Erro ao remover produto:', error));
         }
     </script>
 </body>
