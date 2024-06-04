@@ -24,11 +24,10 @@ def get_produtos():
 
 @app.route('/produtos/<int:produto_id>', methods=['GET'])
 def get_produto(produto_id):
-    print(f"Procurando produto com ID: {produto_id}")
     produtos = read_produtos()
     produto = next((produto for produto in produtos if produto['id'] == produto_id), None)
-    print(f"Produto encontrado: {produto}")
     return jsonify(produto) if produto else ('', 404)
+
 
 # Rota para adicionar um novo produto
 @app.route('/produtos', methods=['POST'])
