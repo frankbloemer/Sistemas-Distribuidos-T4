@@ -1,1 +1,44 @@
-[{"id": 1, "nome": "Coca Cola (2 litros)", "preco": 10.99, "imagem": "https://img.irroba.com.br/filters:fill(fff):quality(80)/bebfesta/catalog/produtos/teste/coca-cola-beb-festa.jpg", "estoque": 15}, {"id": 2, "nome": "Dolly Guarana (2 litros)", "preco": 6.99, "imagem": "https://a-static.mlcdn.com.br/450x450/dolly-guarana-2l/adegareisdeouro/e6a185a864c911ecb4f84201ac18503a/ea6ba86711b2ae90de185e0022e8ca09.jpeg", "estoque": 0}, {"id": 3, "nome": "Glacial Lata (350 ml)", "preco": 7.77, "imagem": "https://cdn.irmaospatrocinio.com.br/img/p/1/5/9/0/7/7/159077-large_default.jpg", "estoque": 77}, {"id": 4, "nome": "Itubaina (2 litros)", "preco": 7.49, "imagem": "https://images-americanas.b2w.io/produtos/44632183/imagens/refrigerante-itubaina-2l/44632187_1_large.jpg", "estoque": 6}, {"nome": "guarana jesus", "preco": 6.99, "estoque": 18, "imagem": "https://upload.wikimedia.org/wikipedia/commons/8/83/Guaran\u00e1_Jesus._The_Brazilian_pink_soda._%2850549053251%29.jpg"}]
+[
+    {
+        "id": 1,
+        "nome": "Coca Cola (2 litros)",
+        "preco": 6,
+        "imagem": "https://img.irroba.com.br/filters:fill(fff):quality(80)/bebfesta/catalog/produtos/teste/coca-cola-beb-festa.jpg",
+        "estoque": 0
+    },
+    {
+        "id": 2,
+        "nome": "Dolly Guarana (2 litros)",
+        "preco": 5,
+        "imagem": "https://a-static.mlcdn.com.br/450x450/dolly-guarana-2l/adegareisdeouro/e6a185a864c911ecb4f84201ac18503a/ea6ba86711b2ae90de185e0022e8ca09.jpeg",
+        "estoque": 18
+    },
+    {
+        "id": 3,
+        "nome": "Glacial Lata (350 ml)",
+        "preco": 7.77,
+        "imagem": "https://cdn.irmaospatrocinio.com.br/img/p/1/5/9/0/7/7/159077-large_default.jpg",
+        "estoque": 10
+    },
+    {
+        "id": 4,
+        "nome": "Itubaina (2 litros)",
+        "preco": 7.49,
+        "imagem": "https://images-americanas.b2w.io/produtos/44632183/imagens/refrigerante-itubaina-2l/44632187_1_large.jpg",
+        "estoque": 6
+    },
+    {
+        "id": 5,
+        "nome": "guarana jesus",
+        "preco": 6.99,
+        "estoque": 18,
+        "imagem": "https://upload.wikimedia.org/wikipedia/commons/8/83/Guaran\u00e1_Jesus._The_Brazilian_pink_soda._%2850549053251%29.jpg"
+    },
+    {
+        "nome": "aaaaa",
+        "preco": 12,
+        "estoque": 12,
+        "imagem": "aaaaa",
+        "id": 6
+    }
+]
