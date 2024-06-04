@@ -47,8 +47,9 @@
     <div id="add-product-form" style="display: none;">
         <h3>Adicionar Produto</h3>
         <label>Nome: <input type="text" id="new-product-name"></label><br>
-        <label>Preço: <input type="number" id="new-product-price" step="0.01"></label><br>
         <label>Estoque: <input type="number" id="new-product-stock"></label><br>
+        <label>Validade: <input type="date" id="new-product-validity"></label><br>
+        <label>Lote: <input type="text" id="new-product-lot"></label><br>
         <label>Imagem URL: <input type="text" id="new-product-image"></label><br>
         <button onclick="addProduct()">Adicionar</button>
         <button onclick="hideAddProductForm()">Cancelar</button>
@@ -76,8 +77,8 @@
                 const stockItem = document.createElement('li');
                 stockItem.innerHTML = `
                     <img src="${product.imagem}" alt="${product.nome}">
-                    ${product.nome}: R$ ${product.preco.toFixed(2)}, ${product.estoque} em estoque
-                    <button onclick="editProduct('${product.id}', '${product.nome}', ${product.preco}, ${product.estoque}, '${product.imagem}')">Editar</button>
+                    ${product.nome}: ${product.estoque} em estoque - Validade: ${product.validade} - Lote: ${product.lote}
+                    <button onclick="editProduct('${product.id}', '${product.nome}', ${product.estoque}, '${product.imagem}', '${product.validade}', '${product.lote}')">Editar</button>
                     <button onclick="removeProduct('${product.id}')">Remover</button>
                 `;
                 stockList.appendChild(stockItem);
@@ -94,14 +95,16 @@
 
         function addProduct() {
             const name = document.getElementById('new-product-name').value;
-            const price = parseFloat(document.getElementById('new-product-price').value);
             const stock = parseInt(document.getElementById('new-product-stock').value);
+            const validity = document.getElementById('new-product-validity').value;
+            const lot = document.getElementById('new-product-lot').value;
             const image = document.getElementById('new-product-image').value;
 
             const newProduct = {
                 nome: name,
-                preco: price,
                 estoque: stock,
+                validade: validity,
+                lote: lot,
                 imagem: image
             };
 
@@ -110,31 +113,28 @@
                     products.push(response.data);
                     updateStockList();
                     hideAddProductForm();
+                    location.reload(); // Atualiza a página
                 })
                 .catch(error => console.error('Erro ao adicionar produto:', error));
         }
 
-        function editProduct(id, nome, preco, estoque, imagem) {
-            const newPrice = prompt('Novo preço:', preco);
+        function editProduct(id, nome, estoque, imagem, validade, lote) {
             const newStock = prompt('Novo estoque:', estoque);
+            const newValidity = prompt('Nova validade:', validade);
+            const newLot = prompt('Novo lote:', lote);
 
-            if (newPrice !== null && newStock !== null) {
+            if (newStock !== null && newValidity !== null && newLot !== null) {
                 const updatedProduct = {
                     nome: nome,
-                    preco: parseFloat(newPrice),
                     estoque: parseInt(newStock),
+                    validade: newValidity,
+                    lote: newLot,
                     imagem: imagem
                 };
 
                 axios.put(`${API_URL}/${id}`, updatedProduct)
                     .then(() => {
-                        const index = products.findIndex(p => p.id === id);
-                        if (index !== -1) {
-                            products[index] = updatedProduct;
-                            updateStockList();
-                        } else {
-                            console.error('Produto não encontrado:', id);
-                        }
+                        location.reload(); // Atualiza a página
                     })
                     .catch(error => console.error('Erro ao editar produto:', error));
             }
@@ -144,8 +144,7 @@
             if (confirm('Tem certeza de que deseja remover este produto?')) {
                 axios.delete(`${API_URL}/${id}`)
                     .then(() => {
-                        products = products.filter(p => p.id !== id);
-                        updateStockList();
+                        location.reload(); // Atualiza a página
                     })
                     .catch(error => console.error('Erro ao remover produto:', error));
             }
