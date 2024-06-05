@@ -2,17 +2,43 @@ from flask import Flask, jsonify, request
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 from flask_sse import sse
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import serialization
 import json
 import os
-import time
 
 app = Flask(__name__)
 socketio = SocketIO(app)
 CORS(app)
 
+
+with open("private_key.pem", "rb") as key_file:
+    private_key = serialization.load_pem_private_key(
+        key_file.read(),
+        password=None,
+    )
+
+public_key = private_key.public_key()
+public_key_serialized = public_key.public_bytes(
+   encoding=serialization.Encoding.PEM,
+   format=serialization.PublicFormat.SubjectPublicKeyInfo
+)
+
+
 @socketio.on('connect')
 def handle_connect():
-    emit('connected', {'message': 'Conectado ao servidor!'})
+    message = b"Conectado ao servidor!"
+    signature = private_key.sign(
+    message,
+    padding.PSS(
+        mgf=padding.MGF1(hashes.SHA256()),
+        salt_length=padding.PSS.MAX_LENGTH
+    ),
+        hashes.SHA256()
+    )
+    data = {'message': message, 'signature': signature}
+    emit('connected', data)
 
 
 
@@ -64,7 +90,6 @@ def update_produto(produto_id):
     if produto:
         produto.update(update_data)
         write_produtos(produtos)
-        print(produto)
         nome = produto.get('nome')
         if produto['estoque'] == 0:
             socketio.emit("estoque_vazio", f"Estoque vazio de {nome}")
