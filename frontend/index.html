@@ -55,9 +55,14 @@
         <button onclick="hideAddProductForm()">Cancelar</button>
     </div>
 
+    <!-- Inclua a biblioteca Socket.IO -->
+    <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+    <!-- Inclua a biblioteca Axios -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
     <script>
         const API_URL = 'http://localhost:5000/produtos';
+        const socket = io('http://localhost:5000');  // Conecte-se ao servidor WebSocket
 
         let products = [];
 
@@ -68,7 +73,30 @@
                     updateStockList();
                 })
                 .catch(error => console.error('Erro ao carregar produtos:', error));
+
+            // WebSocket event listeners
+            socket.on('connected', (data) => {
+                console.log('Conectado ao servidor:', data.message);
+            });
+
+            socket.on('novo_produto', (message) => {
+                console.log(message);
+                fetchProducts();  // Re-fetch products when a new one is added
+            });
+
+            socket.on('estoque_vazio', (message) => {
+                alert(message);
+            });
         });
+
+        function fetchProducts() {
+            axios.get(API_URL)
+                .then(response => {
+                    products = response.data;
+                    updateStockList();
+                })
+                .catch(error => console.error('Erro ao carregar produtos:', error));
+        }
 
         function updateStockList() {
             const stockList = document.getElementById('stock-list');

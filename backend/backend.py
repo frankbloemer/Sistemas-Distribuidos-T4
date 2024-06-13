@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
-from flask_sse import sse
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import serialization
@@ -9,9 +8,9 @@ import json
 import os
 
 app = Flask(__name__)
-socketio = SocketIO(app)
+app.config['SECRET_KEY'] = 'secret!'
+socketio = SocketIO(app, cors_allowed_origins="*")
 CORS(app)
-
 
 with open("private_key.pem", "rb") as key_file:
     private_key = serialization.load_pem_private_key(
@@ -25,22 +24,19 @@ public_key_serialized = public_key.public_bytes(
    format=serialization.PublicFormat.SubjectPublicKeyInfo
 )
 
-
 @socketio.on('connect')
 def handle_connect():
     message = b"Conectado ao servidor!"
     signature = private_key.sign(
-    message,
-    padding.PSS(
-        mgf=padding.MGF1(hashes.SHA256()),
-        salt_length=padding.PSS.MAX_LENGTH
-    ),
+        message,
+        padding.PSS(
+            mgf=padding.MGF1(hashes.SHA256()),
+            salt_length=padding.PSS.MAX_LENGTH
+        ),
         hashes.SHA256()
     )
-    data = {'message': message, 'signature': signature}
+    data = {'message': message.decode(), 'signature': signature.hex()}
     emit('connected', data)
-
-
 
 DATA_FILE = 'produtos.json'
 

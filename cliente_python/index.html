@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO Client</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Socket.IO Client</h1>
+    <script>
+        // Conectando ao servidor Socket.IO
+        const socket = io('http://localhost:5000');
+
+        // Evento 'connect' é disparado quando a conexão é estabelecida com sucesso
+        socket.on('connect', () => {
+            console.log('Conectado ao servidor Socket.IO');
+        });
+
+        // Evento 'connected' personalizado, recebido do servidor
+        socket.on('connected', (data) => {
+            console.log(data.message);
+        });
+
+        // Evento 'message' personalizado, recebido do servidor
+        socket.on('message', (data) => {
+            console.log('Mensagem recebida:', data);
+        });
+
+        // Evento 'evento1' personalizado, recebido do servidor
+        socket.on('evento1', (data) => {
+            console.log('Evento 1 recebido:', data);
+        });
+
+        // Evento 'evento2' personalizado, recebido do servidor
+        socket.on('evento2', (data) => {
+            console.log('Evento 2 recebido:', data);
+        });
+
+        // Registrando manipuladores de eventos para eventos personalizados
+        socket.on('novo_produto', (data) => {
+            console.log('Novo produto:', data);
+        });
+
+        socket.on('estoque_vazio', (data) => {
+            console.log('Estoque vazio:', data);
+        });
+
+        // Emitindo um evento personalizado para o servidor
+        socket.emit('new_event', { data: 'Olá do cliente JavaScript!' });
+    </script>
+</body>
+</html>

@@ -4,7 +4,7 @@
         "nome": "Coca Cola (2 litros)",
         "preco": 6,
         "imagem": "https://img.irroba.com.br/filters:fill(fff):quality(80)/bebfesta/catalog/produtos/teste/coca-cola-beb-festa.jpg",
-        "estoque": 84,
+        "estoque": 0,
         "validade": "12/12/2024",
         "lote": "123457"
     },
@@ -43,5 +43,13 @@
         "estoque": 10,
         "validade": "19/02/2026",
         "lote": "354220"
+    },
+    {
+        "nome": "agua",
+        "estoque": 2,
+        "validade": "2025-01-01",
+        "lote": "2",
+        "imagem": "aguinha",
+        "id": 6
     }
 ]
